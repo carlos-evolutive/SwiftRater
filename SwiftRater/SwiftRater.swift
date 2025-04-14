@@ -508,8 +508,13 @@ import StoreKit
   private func showRatingAlert(host: UIViewController?, force: Bool) {
     NSLog("[SwiftRater] Trying to show review request dialog.")
     if #available(iOS 10.3, *), SwiftRater.useStoreKitIfAvailable, !force {
-      SKStoreReviewController.requestReview()
-      UsageDataManager.shared.isRateDone = true
+        SKStoreReviewController.requestReview()
+        if UsageDataManager.shared.daysBeforeReminding == 0 {
+            UsageDataManager.shared.isRateDone = true
+        } else {
+            // StoreKit automatically manages when ratings can be shown again.
+            UsageDataManager.shared.saveReminderRequestDate()
+        }
     } else {
       let alertController = UIAlertController(title: titleText, message: messageText, preferredStyle: .alert)
       
